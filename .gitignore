@@ -3,3 +3,4 @@ codehelp/
 *.sublime-project
 *.sublime-workspace
 dist/
+.idea/
