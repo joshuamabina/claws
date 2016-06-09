@@ -10,7 +10,7 @@ OBJ_DIR = build/obj
 BIN_DIR = build
 
 #source files and corresponding objects
-SOURCES = debugger.cpp functions.cpp phoenix.cpp
+SOURCES = functions.cpp claws.cpp
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
 #header file locations
@@ -35,11 +35,11 @@ LDFLAGS =
 # WINDOWS
 #
 # comment out below for non-windows builds
-WIN = 1
+# WIN = 1
 
 ifdef WIN
 #windows settings
-EXE_NAME = phoenix.exe
+EXE_NAME = claws.exe
 LDLIBS += $(WIN_DEPS)
 LDFLAGS = -static
 
@@ -50,7 +50,7 @@ $(OBJ_DIR)/resources.o: resources.rc assets/eye.ico
 	windres resources.rc $(OBJ_DIR)/resources.o
 else
 #linux settings
-EXE_NAME = phoenix
+EXE_NAME = claws
 LDLIBS += $(LINUX_DEPS)
 #set rpath on linux because of shared lib build
 # LDFLAGS = -Wl,-rpath,\$$ORIGIN/libs,-z,origin
@@ -61,10 +61,6 @@ endif
 
 $(OBJ_DIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INC_PATHS) -c $< -o $@
-
-dev: $(OBJ_DIR)/debugger.o
-	$(CXX) $(CXXFLAGS) $(INC_PATHS) -c dev.cpp -o $(OBJ_DIR)/dev.o
-	$(CXX) $(CXXFLAGS) $(OBJ_DIR)/dev.o $(OBJ_DIR)/debugger.o $(LDLIBS) $(LDFLAGS) -o $(BIN_DIR)/dev.exe
 
 .PHONY: clean
 clean:

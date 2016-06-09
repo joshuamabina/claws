@@ -119,7 +119,7 @@ namespace std {
 
 int main(int argc, char *argv[]) {
 	//declare program options
-	options_description desc("USAGE: phoenix -f <path_to_file> [options]\nAllowed options");
+	options_description desc("USAGE: claws -f <path_to_file> [options]\nAllowed options");
 	desc.add_options()
 		("help,h", "List all arguments - produce help message")
 		("file,f", value<string>()->required(), "Source image file")
