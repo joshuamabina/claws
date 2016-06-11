@@ -4,3 +4,4 @@ codehelp/
 *.sublime-workspace
 dist/
 .idea/
+build/
