@@ -2,11 +2,13 @@
 # COMPILER CONFIG
 #
 
-# compiler details
+# Use g++ to compile C++ programs.
+# -Wall - prints "all" warning messages.
+# -g generates additional information for use with gdb.
+# -std - tells make to compile to both the C++03 and the C++11 standard.
 CXX = g++
-CXXFLAGS = -g -std=c++0x -O3
+CXXFLAGS = -Wall -g -std=c++0x -O3
 
-# project structure
 OBJ_DIR = build/obj
 BIN_DIR = build
 
