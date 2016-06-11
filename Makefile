@@ -1,69 +1,47 @@
-#
-# COMPILER CONFIG
-#
+# GNU Make unicorns.
 
-# Use g++ to compile C++ programs.
-# -Wall - prints "all" warning messages.
+# The main C++ compiler
+CC = g++
+
+# -Wall prints "all" warning messages.
 # -g generates additional information for use with gdb.
-# -std - tells make to compile to both the C++03 and the C++11 standard.
-CXX = g++
-CXXFLAGS = -Wall -g -std=c++0x -O3
+# -std - compiles sources in both the C++03 and the C++11 standard.
+CFLAGS += -Wall -g -std=c++0x -03
 
-OBJ_DIR = build/obj
-BIN_DIR = build
+SRCDIR = src
+BUILDDIR = build
+TARGET = bin/claws
 
-# source files and corresponding objects
-SOURCES = functions.cpp claws.cpp
-OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
+SRCEXT = cpp
+SOURCES = $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJECTS = $(patsubst $(SRCDIR)/%, $(BUILDDIR)/%, $(SOURCES: .$(SRCEXT)=.o))
 
-# header file locations
-OCV_INC = C:\opencv_2_4_6\build\include
-BOOST_INC = C:\boost_1_54_0
-INC_PATHS = -isystem$(OCV_INC) -isystem$(BOOST_INC)
+# Include header files.
+INC = -I include
+
+# Include boost libraries.
+LIBS += -L lib -lboost_program_options -lboost_filesystem -lboost_system
+
+# Include opencv libraries.
+CFLAGS += $(shell pkg-config --cflags opencv)
+LIBS += $(shell pkg-config --libs opencv)
+
+$(TARGET): $(OBJECTS)
+	@echo " Linking..."
+	@echo " $(CC) $^ -o $(TARGET) $(LIBS)"; $(CC) $^ -o $(TARGET) $(LIBS)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(BUILDDIR)
+	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
+
+clean:
+	@echo " Cleaning..."
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 #
-# LINKER CONFIG
+# TODO: First solve the problem, then write the code.
 #
-# used libraries
-OCV_LIBS = -lopencv_highgui -lopencv_imgproc -lopencv_core
-BOOST_LIBS = -lboost_program_options -lboost_filesystem -lboost_system
-WIN_DEPS = -lzlib -llibjpeg -llibtiff -llibpng -lcomctl32 -lgdi32
-LINUX_DEPS = `pkg-config opencv --libs`
-
-# linker options
-LDLIBS = $(OCV_LIBS) $(BOOST_LIBS)
-LDFLAGS =
-
-#
-# WINDOWS
-#
-# comment out below for non-windows builds
-# WIN = 1
-
-ifdef WIN
-#windows settings
-EXE_NAME = claws.exe
-LDLIBS += $(WIN_DEPS)
-LDFLAGS = -static
-
-all: $(OBJECTS) $(OBJ_DIR)/resources.o
-	$(CXX) $(CXXFLAGS) $(OBJECTS) $(OBJ_DIR)/resources.o $(LDLIBS) $(LDFLAGS) -o $(BIN_DIR)/$(EXE_NAME)
-
-else
-#linux settings
-EXE_NAME = claws
-LDLIBS += $(LINUX_DEPS)
-#set rpath on linux because of shared lib build
-# LDFLAGS = -Wl,-rpath,\$$ORIGIN/libs,-z,origin
-
-all: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) $(LDLIBS) $(LDFLAGS) -o $(BIN_DIR)/$(EXE_NAME)
-endif
-
-$(OBJ_DIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INC_PATHS) -c $< -o $@
+tests:
+	@echo " Pending..."
 
 .PHONY: clean
-clean:
-	rm -f build/*.*
-	rm -f build/obj/*.*
