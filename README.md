@@ -1,4 +1,4 @@
-<pre align="center">
+<pre>
 	
 Claws (thought would read as CORE) for Falcon - an automated Image, Audio*, and Video* Forensics Software
 
