@@ -23,7 +23,7 @@ SOURCES = $(shell find $(SOURCE) -type f -name *.$(SOURCE_EXT))
 OBJECTS = $(patsubst $(SOURCE)/%,$(BUILD)/%,$(SOURCES:.$(SOURCE_EXT)=.o))
 
 # Include boost libraries.
-LIBS += -L lib -lboost_program_options -lboost_filesystem -lboost_system
+LIBS += -L lib -lboost_program_options -lboost_filesystem -lboost_system -lexiv2
 
 # Include opencv libraries.
 CFLAGS += $(shell pkg-config --cflags opencv)
