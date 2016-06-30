@@ -162,6 +162,7 @@ int main(int argc, char *argv[]) {
 		("copymove", value<vector<double>>()->multitoken()->implicit_value(vector<double>{4, 1.0}), "Copy-Move Detection (DCT) [retain] [qcoeff]")
 		("exif", bool_switch()->default_value(false), "Exchangeable Image File Format")
 		("iptc", bool_switch()->default_value(false), "International Press Telecommunication Council")
+		("xmp", bool_switch()->default_value(false), "Extensible Metadata Platform")
 
 		("autolevels,a", bool_switch()->default_value(false), "Apply histogram stretch to outputs")
 		("quality,q", bool_switch()->default_value(true), "Estimate JPEG Quality")
@@ -328,8 +329,7 @@ int main(int argc, char *argv[]) {
 		fout.open(exifDataFile);
 		cout << "[INFO] Saving exif data to: " << exifDataFile << endl;
 
-		Exiv2::ExifData::const_iterator end = exifData.end();
-		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
+		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != exifData.end(); ++exifIterator) {
 			const char* typeName = exifIterator->typeName();
 			fout << std::setw(44) << std::setfill(' ') << std::left << exifIterator->key() << " "
 				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
@@ -361,12 +361,43 @@ int main(int argc, char *argv[]) {
 		fout.open(iptcDataFile);
 		cout << "[INFO] Saving iptc data to: " << iptcDataFile << endl;
 
-		Exiv2::IptcData::iterator end = iptcData.end();
-		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != end; ++iptcIterator) {
+		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != iptcData.end(); ++iptcIterator) {
 			const char* typeName = iptcIterator->typeName();
 			fout << std::setw(44) << std::setfill(' ') << std::left << iptcIterator->key() << " "
 				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
 				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << iptcIterator->value() << "\n";
+		}
+		fout.close();
+	}
+
+	if(vm["xmp"].as<bool>()) {
+		Exiv2::Image::AutoPtr image;
+
+		try {
+			image = Exiv2::ImageFactory::open(source_path.string());
+		} catch(Exiv2::Error &ex) {
+			cout << "Whoops! '" << ex.what() << "'" << endl;
+			return -1;
+		}
+
+		image->readMetadata();
+		Exiv2::XmpData &xmpData = image->xmpData();
+		if(xmpData.empty()) {
+			string error(source_path.string());
+			error += ": contains no XMP data";
+			throw Exiv2::Error(1, error);
+		}
+
+		// Write to output file.
+		string xmpDataFile = output_path.string() + "/xmp.txt";
+		fout.open(xmpDataFile);
+		cout << "[INFO] Saving xmp data to: " << xmpDataFile << endl;
+
+		for (Exiv2::XmpData::const_iterator xmpIterator = xmpData.begin(); xmpIterator != xmpData.end(); ++xmpIterator) {
+			const char* typeName = xmpIterator->typeName();
+			fout << std::setw(44) << std::setfill(' ') << std::left << xmpIterator->key() << " "
+				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
+				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << xmpIterator->value() << "\n";
 		}
 		fout.close();
 	}
