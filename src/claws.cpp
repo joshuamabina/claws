@@ -159,6 +159,7 @@ int main(int argc, char *argv[]) {
 		("avgdist", bool_switch()->default_value(false), "Average Distance")
 		("copymove", value<vector<double>>()->multitoken()->implicit_value(vector<double>{4, 1.0}), "Copy-Move Detection (DCT) [retain] [qcoeff]")
 		("exif", bool_switch()->default_value(false), "Exchangeable Image File Format")
+		("iptc", bool_switch()->default_value(false), "International Press Telecommunication Council")
 
 		("autolevels,a", bool_switch()->default_value(false), "Apply histogram stretch to outputs")
 		("quality,q", bool_switch()->default_value(true), "Estimate JPEG Quality")
@@ -324,6 +325,31 @@ int main(int argc, char *argv[]) {
 		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
 			std::cout << std::setfill(' ') << std::left << setw(44) << exifIterator->key() << ": "
 				<< std::left << std::setfill(' ') << std::setw(9) << exifIterator->value() << "\n";
+		}
+	}
+
+	if(vm["iptc"].as<bool>()) {
+		Exiv2::Image::AutoPtr image;
+
+		try {
+			image = Exiv2::ImageFactory::open(source_path.string());
+		} catch(Exiv2::Error &ex) {
+			cout << "Whoops! '" << ex.what() << "'" << endl;
+			return -1;
+		}
+
+		image->readMetadata();
+		Exiv2::IptcData &iptcData = image->iptcData();
+		if(iptcData.empty()) {
+			string error(source_path.string());
+			error += ": contains no IPTC data";
+			throw Exiv2::Error(1, error);
+		}
+
+		Exiv2::IptcData::iterator end = iptcData.end();
+		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != end; ++iptcIterator) {
+			std::cout << std::setfill(' ') << std::left << setw(44)
+				<< iptcIterator->key() << ": " << std::left << iptcIterator->value() << "\n";
 		}
 	}
 
