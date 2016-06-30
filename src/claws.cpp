@@ -28,8 +28,16 @@ string output_stem;
 ptree root;
 bool output, display, autolevels;
 
-//run_analysis constants
-enum analysis_type {A_ELA, A_LG, A_AVGDIST, A_HSV, A_LAB, A_LAB_FAST, A_COPY_MOVE_DCT};
+enum analysis_type {
+	ELA,
+	LG,
+	AVG_DIST,
+	HSV,
+	LAB,
+	LAB_FAST,
+	COPY_MOVE
+};
+
 string analysis_name[] = {
 	"Error Level Analysis", "Luminance Gradient", "Average Distance",
 	"HSV Histogram", "Lab Histogram", "Lab Histogram (fast)", "Copy Move Detection (DCT)"
@@ -42,7 +50,7 @@ void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params)
 	string title = analysis_name[type]; //display window title
 	string ptree_element = analysis_abbr[type]; //json tree title
 
-	bool apply_autolevels = autolevels && (type == A_ELA || type == A_LG || type == A_AVGDIST);
+	bool apply_autolevels = autolevels && (type == ELA || type == LG || type == AVG_DIST);
 	if(apply_autolevels) {
 		output_filepath += "_autolevels.png";
 		ptree_element += "_autolevels";
@@ -51,29 +59,29 @@ void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params)
 	}
 
 	switch(type) {
-		case A_ELA:
+		case ELA:
 			error_level_analysis(src, dst, params[0]);
 			root.put(ptree_element + ".quality", params[0]);
 			break;
-		case A_LG:
+		case LG:
 			luminance_gradient(src, dst);
 			break;
-		case A_AVGDIST:
+		case AVG_DIST:
 			average_distance(src, dst);
 			break;
-		case A_HSV:
+		case HSV:
 			hsv_histogram(src, dst, params[0]);
 			root.put(ptree_element + ".whitebg", (bool)params[0]);
 			break;
-		case A_LAB:
+		case LAB:
 			lab_histogram(src, dst, params[0]);
 			root.put(ptree_element + ".whitebg", (bool)params[0]);
 			break;
-		case A_LAB_FAST:
+		case LAB_FAST:
 			lab_histogram_fast(src, dst, params[0]);
 			root.put(ptree_element + ".whitebg", (bool)params[0]);
 			break;
-		case A_COPY_MOVE_DCT:
+		case COPY_MOVE:
 			copy_move_dct(src, dst, params[0], params[1]);
 			root.put(ptree_element + ".retain", params[0]);
 			root.put(ptree_element + ".qcoeff", params[1]);
@@ -93,7 +101,7 @@ void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params)
 			root.put(ptree_element + ".filename", filepath);
 		}
 	}
-	
+
 	if(display) { //display right away, waitKey(0) at the end of program
 		namedWindow(title);
 		imshow(title, dst);
@@ -215,49 +223,49 @@ int main(int argc, char *argv[]) {
 	output = vm.count("output");
 	autolevels = vm["autolevels"].as<bool>();
 	output_stem = output_path.string() + "/" + source_path.stem().string();
-	
+
 	bool verbose = vm["verbose"].as<bool>();
 
 	if(vm.count("ela")) {
 		Mat ela;
 		vector<double> params {(double) vm["ela"].as<int>()};
 
-		run_analysis(source_image, ela, A_ELA, params);
+		run_analysis(source_image, ela, ELA, params);
 	}
 
 	if(vm["lg"].as<bool>()) {
 		Mat lg;
 		vector<double> params;
 
-		run_analysis(source_image, lg, A_LG, params);
+		run_analysis(source_image, lg, LG, params);
 	}
 
 	if(vm["avgdist"].as<bool>()) {
 		Mat avgdist;
 		vector<double> params;
 
-		run_analysis(source_image, avgdist, A_AVGDIST, params);
+		run_analysis(source_image, avgdist, AVG_DIST, params);
 	}
 
 	if(vm.count("hsv")) {
 		Mat hsv;
 		vector<double> params {(double) vm["hsv"].as<int>()};
 
-		run_analysis(source_image, hsv, A_HSV, params);
+		run_analysis(source_image, hsv, HSV, params);
 	}
 
 	if(vm.count("lab")) {
 		Mat lab;
 		vector<double> params {(double) vm["lab"].as<int>()};
 
-		run_analysis(source_image, lab, A_LAB, params);
+		run_analysis(source_image, lab, LAB, params);
 	}
 
 	if(vm.count("labfast")) {
 		Mat lab;
 		vector<double> params {(double) vm["labfast"].as<int>()};
 
-		run_analysis(source_image, lab, A_LAB_FAST, params);
+		run_analysis(source_image, lab, LAB_FAST, params);
 	}
 
 	if(vm.count("copymove")) {
@@ -271,7 +279,7 @@ int main(int argc, char *argv[]) {
 			params = input;
 		}
 
-		run_analysis(source_image, copymove, A_COPY_MOVE_DCT, params);
+		run_analysis(source_image, copymove, COPY_MOVE, params);
 	}
 
 	if(vm["quality"].as<bool>()) {

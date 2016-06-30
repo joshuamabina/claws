@@ -320,7 +320,7 @@ int extract_jpeg_marker(const char* filename, char marker, vector<char*> &list) 
 	/*cout << "First Two: " << endl;
 	cout << "\t" << hex << (unsigned short)buffer[0] << endl;
 	cout << "\t" << hex << (unsigned short)buffer[1] << endl;*/
-	
+
 	in.read(buffer, 2);
 	if(buffer[0] != (char)0xFF) {
 		//jpeg but corrupt?
@@ -397,7 +397,7 @@ int estimate_jpeg_quality(const char* filename, vector<qtable> &qtables, vector<
 	}
 
 	Mat zigzag8 = (Mat_<int>(64, 1) << 0, 1, 5, 6, 14, 15, 27, 28, 2, 4, 7, 13, 16, 26, 29, 42, 3, 8, 12, 17, 25, 30, 41, 43, 9, 11, 18, 24, 31, 40, 44, 53, 10, 19, 23, 32, 39, 45, 52, 54, 20, 22, 33, 38, 46, 51, 55, 60, 21, 34, 37, 47, 50, 56, 59, 61, 35, 36, 48, 49, 57, 58, 62, 63);
-	
+
 	//loop over extracted files and prepare to estimate quality
 	for(int k=0; k<dqt_tables.size(); k++) {
 		Mat dqt(8,8, CV_32F);
