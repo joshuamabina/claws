@@ -323,8 +323,8 @@ int main(int argc, char *argv[]) {
 
 		Exiv2::ExifData::const_iterator end = exifData.end();
 		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
-			std::cout << std::setfill(' ') << std::left << setw(44) << exifIterator->key() << ": "
-				<< std::left << std::setfill(' ') << std::setw(9) << exifIterator->value() << "\n";
+			std::cout << std::setw(44) << std::setfill(' ') << std::left << exifIterator->key() << ": "
+				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << exifIterator->value() << "\n";
 		}
 	}
 
@@ -348,8 +348,8 @@ int main(int argc, char *argv[]) {
 
 		Exiv2::IptcData::iterator end = iptcData.end();
 		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != end; ++iptcIterator) {
-			std::cout << std::setfill(' ') << std::left << setw(44)
-				<< iptcIterator->key() << ": " << std::left << iptcIterator->value() << "\n";
+			std::cout << std::setw(44) << std::setfill(' ') << std::left << iptcIterator->key() << ": "
+				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << iptcIterator->value() << "\n";
 		}
 	}
 
