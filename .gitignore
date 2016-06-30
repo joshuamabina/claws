@@ -1,7 +1,8 @@
-i/
-codehelp/
+.idea/
 *.sublime-project
 *.sublime-workspace
-dist/
-.idea/
+
 build/
+dist/
+
+/claws
