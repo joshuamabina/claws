@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ using boost::property_tree::ptree;
 string output_stem;
 ptree root;
 bool output, display, autolevels;
+ofstream fout;
 
 enum analysis_type {
 	ELA,
@@ -111,7 +113,7 @@ void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params)
 		hsv_histogram_stretch(dst, dst);
 	}
 
-	if(output) { //output image & add to ptree
+	if(output) { // output image & add to ptree
 		bool write_success = imwrite(output_filepath, dst);
 		if(!write_success) {
 			root.put(ptree_element + ".filename", "Error! Do you have write permission?");
@@ -322,12 +324,19 @@ int main(int argc, char *argv[]) {
 		}
 
 		Exiv2::ExifData::const_iterator end = exifData.end();
+
+		// Write to output file.
+		string exifDataFile = output_path.string() + "/exif.txt";
+
+		fout.open(exifDataFile);
+		cout << "[INFO] Saving exif data to: " << exifDataFile << endl;
 		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
 			const char* typeName = exifIterator->typeName();
-			std::cout << std::setw(44) << std::setfill(' ') << std::left << exifIterator->key() << " "
+			fout << std::setw(44) << std::setfill(' ') << std::left << exifIterator->key() << " "
 				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
 				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << exifIterator->value() << "\n";
 		}
+		fout.close();
 	}
 
 	if(vm["iptc"].as<bool>()) {
@@ -351,7 +360,7 @@ int main(int argc, char *argv[]) {
 		Exiv2::IptcData::iterator end = iptcData.end();
 		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != end; ++iptcIterator) {
 			const char* typeName = iptcIterator->typeName();
-			std::cout << std::setw(44) << std::setfill(' ') << std::left << iptcIterator->key() << " "
+			fout << std::setw(44) << std::setfill(' ') << std::left << iptcIterator->key() << " "
 				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
 				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << iptcIterator->value() << "\n";
 		}
