@@ -323,13 +323,12 @@ int main(int argc, char *argv[]) {
 			throw Exiv2::Error(1, error);
 		}
 
-		Exiv2::ExifData::const_iterator end = exifData.end();
-
 		// Write to output file.
 		string exifDataFile = output_path.string() + "/exif.txt";
-
 		fout.open(exifDataFile);
 		cout << "[INFO] Saving exif data to: " << exifDataFile << endl;
+
+		Exiv2::ExifData::const_iterator end = exifData.end();
 		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
 			const char* typeName = exifIterator->typeName();
 			fout << std::setw(44) << std::setfill(' ') << std::left << exifIterator->key() << " "
@@ -357,6 +356,11 @@ int main(int argc, char *argv[]) {
 			throw Exiv2::Error(1, error);
 		}
 
+		// Write to output file.
+		string iptcDataFile = output_path.string() + "/iptc.txt";
+		fout.open(iptcDataFile);
+		cout << "[INFO] Saving iptc data to: " << iptcDataFile << endl;
+
 		Exiv2::IptcData::iterator end = iptcData.end();
 		for (Exiv2::IptcData::const_iterator iptcIterator = iptcData.begin(); iptcIterator != end; ++iptcIterator) {
 			const char* typeName = iptcIterator->typeName();
@@ -364,6 +368,7 @@ int main(int argc, char *argv[]) {
 				<< std::setw(9) << std::setfill(' ') << std::left << (typeName ? typeName : "Unknown") << " "
 				<< std::dec << std::setw(3) << std::setfill(' ') << std::left << iptcIterator->value() << "\n";
 		}
+		fout.close();
 	}
 
 	if(vm["quality"].as<bool>()) {
