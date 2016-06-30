@@ -14,6 +14,8 @@
 #include <boost/foreach.hpp>
 #include <chrono>
 
+#include <exiv2/exiv2.hpp>
+
 #include "structs.h"
 #include "functions.hpp"
 
@@ -35,20 +37,37 @@ enum analysis_type {
 	HSV,
 	LAB,
 	LAB_FAST,
-	COPY_MOVE
+	COPY_MOVE,
+	EXIF
 };
 
 string analysis_name[] = {
-	"Error Level Analysis", "Luminance Gradient", "Average Distance",
-	"HSV Histogram", "Lab Histogram", "Lab Histogram (fast)", "Copy Move Detection (DCT)"
+	"Error Level Analysis",
+	"Luminance Gradient",
+	"Average Distance",
+	"HSV Histogram",
+	"Lab Histogram",
+	"Lab Histogram (fast)",
+	"Copy Move Detection (DCT)",
+	"Exchangeable Image File Format"
 };
-string analysis_abbr[] = {"ela", "lg", "avgdist", "hsv", "lab", "lab_fast", "copymove"};
+
+string analysis_abbr[] = {
+	"ela",
+	"lg",
+	"avgdist",
+	"hsv",
+	"lab",
+	"lab_fast",
+	"copymove",
+	"exif"
+};
 
 //run analysis on src image
 void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params) {
 	string output_filepath = output_stem + "_" + analysis_abbr[type]; //file name
-	string title = analysis_name[type]; //display window title
-	string ptree_element = analysis_abbr[type]; //json tree title
+	string title = analysis_name[type]; // display window title
+	string ptree_element = analysis_abbr[type]; // json tree title
 
 	bool apply_autolevels = autolevels && (type == ELA || type == LG || type == AVG_DIST);
 	if(apply_autolevels) {
@@ -110,12 +129,12 @@ void run_analysis(Mat &src, Mat &dst, analysis_type type, vector<double> params)
 	}
 }
 
-//override ostream << operator for vector<double> so we can use it as implicit_value
-//or as boost puts it, make vector<double> ostream'able
+// override ostream << operator for vector<double> so we can use it as implicit_value
+// or as boost puts it, make vector<double> ostream'able
 namespace std {
 	static std::ostream& operator<<(std::ostream& os, const std::vector<double>& v) {
 		os << '{';
-		for(int i=0; i<v.size(); i++) {
+		for(unsigned int i=0; i<v.size(); i++) {
 			if (i!=0)
 			os << ", ";
 			os << v[i];
@@ -139,6 +158,7 @@ int main(int argc, char *argv[]) {
 		("lg", bool_switch()->default_value(false), "Luminance Gradient")
 		("avgdist", bool_switch()->default_value(false), "Average Distance")
 		("copymove", value<vector<double>>()->multitoken()->implicit_value(vector<double>{4, 1.0}), "Copy-Move Detection (DCT) [retain] [qcoeff]")
+		("exif", bool_switch()->default_value(false), "Exchangeable Image File Format")
 
 		("autolevels,a", bool_switch()->default_value(false), "Apply histogram stretch to outputs")
 		("quality,q", bool_switch()->default_value(true), "Estimate JPEG Quality")
@@ -181,7 +201,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	//some path info
+	// some path info
 	path source_path;
 	path output_path;
 	Mat source_image;
@@ -280,6 +300,31 @@ int main(int argc, char *argv[]) {
 		}
 
 		run_analysis(source_image, copymove, COPY_MOVE, params);
+	}
+
+	if(vm["exif"].as<bool>()) {
+		Exiv2::Image::AutoPtr image;
+
+		try {
+			image = Exiv2::ImageFactory::open(source_path.string());
+		} catch(Exiv2::Error &ex) {
+			cout << "Whoops! '" << ex.what() << "'" << endl;
+			return -1;
+		}
+
+		image->readMetadata();
+		Exiv2::ExifData &exifData = image->exifData();
+		if(exifData.empty()) {
+			string error(source_path.string());
+			error += ": contains no Exif data";
+			throw Exiv2::Error(1, error);
+		}
+
+		Exiv2::ExifData::const_iterator end = exifData.end();
+		for (Exiv2::ExifData::const_iterator exifIterator = exifData.begin(); exifIterator != end; ++exifIterator) {
+			std::cout << std::setfill(' ') << std::left << setw(44) << exifIterator->key() << ": "
+				<< std::left << std::setfill(' ') << std::setw(9) << exifIterator->value() << "\n";
+		}
 	}
 
 	if(vm["quality"].as<bool>()) {
