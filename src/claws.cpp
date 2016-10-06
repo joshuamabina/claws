@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -30,7 +29,7 @@ using boost::property_tree::ptree;
 string output_stem;
 ptree root;
 bool output, display, autolevels;
-ofstream fout;
+std::fstream fout;
 
 enum analysis_type {
 	ELA,
