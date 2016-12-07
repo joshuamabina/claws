@@ -26,7 +26,7 @@ You are required to have the following libraries:
 - Boost: boost.org `# used to make life easier`
 - Compiler `# build-essentials`
 
-**`ProTip`** I have only tried and succeeded at building the project on a Debian-based OS. Feel free to experiment with any of your choice or you're welcome [try mine](https://www.bunsenlabs.org).
+**`ProTip`** I have only tried and succeeded at building the project on a Debian-based OS. Feel free to experiment with any distro of your choice - or you're welcome to [try mine](https://www.bunsenlabs.org).
 
 ## License
 
