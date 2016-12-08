@@ -26,7 +26,7 @@ You are required to have the following libraries:
 - Exiv2:(http://exiv2.org/) `# used for meta-data extraction`
 - Boost: (http://www.boost.org/) `# used to make life easier`
 
-**`ProTip`** I have only tried and succeeded at building the project on a Debian-based OS. Feel free to experiment with any distro of your choice - or you're welcome to [try mine](https://www.bunsenlabs.org).
+> **`ProTip`** I have only tried and succeeded at building the project on a Debian-based OS. Feel free to experiment with any distro of your choice - or you're welcome to [try mine](https://www.bunsenlabs.org).
 
 ## License
 
