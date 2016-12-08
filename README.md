@@ -10,7 +10,7 @@ The Claws Project is a library and collection of command line digital forensics 
 It began as project by students and their facilitating instructors
 at the [University of Dodoma, College of Informatics and Virtual Education](http://cive.hakikidawa.org/).
 
-This is not, at all, a new thing. I've got my inspiration and code snippets from so many other places, here's a few:
+This is not, at all, a new thing. I've got my inspiration and code snippets from so many other places. Just to mention a few:
 
 - [Ghiro - automated image forensics tool](http://www.getghiro.org/)
 - [elsamuko forensics](https://sites.google.com/site/elsamuko/forensics)
