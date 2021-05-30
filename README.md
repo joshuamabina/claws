@@ -32,6 +32,10 @@ You are required to have the following libraries:
 
 MIT License.
 
-## Contact
+## How can I support you?
 
-I sometimes read my emails. Feel free to yell at me through mabinajoshua@gmail.com
+How can I support you?
+
+- Why not star this repo? It will surely motivate and push me to innovate for more community solutions.
+- Why not Tweet to [@joshuamabina](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fjoshuamabina%2Fclaws&via=%40joshuamabina&text=Curious%20about%20the%20authenticity%20of%20your%20image%3F%20Check%20out%20Claws%20to%20test%20if%20your%20image%20is%20fake%20or%20not%21&hashtags=%23digitalforensics)? I will appreciate.
+- If you're feeling a little charitable, why not follow me on [Twitter](https://twitter.com/joshuamabina) and [GitHub](https://githubcom/joshuamabina)? I will appreciate.
