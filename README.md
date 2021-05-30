@@ -30,7 +30,7 @@ You are required to have the following libraries:
 
 ## License
 
-Do What The Fuck You Want. http://www.wtfpl.net/
+MIT License.
 
 ## Contact
 
